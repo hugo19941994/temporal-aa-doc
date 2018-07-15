@@ -1,0 +1,104 @@
+\documentclass[withindex, glossary]{cam-thesis}
+\pdfminorversion=7
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[table]{xcolor}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{lmodern}
+\usepackage{cleveref}
+
+\usepackage{hyperref}
+\addto\extrasspanish{%
+    \def\chapterautorefname{capítulo}%
+}
+
+\usepackage{svg}
+\usepackage{multicol}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{bookmark}
+\usepackage{blkarray, bigstrut}
+\usepackage{subcaption}
+\usepackage{pgfgantt}
+\usepackage{array}
+\usepackage[capposition=top]{floatrow}
+
+\usepackage[backend=biber, style=ieee, sorting=ynt]{biblatex}
+\addbibresource{thesis.bib}
+
+\usepackage{minted}
+\usemintedstyle{manni}
+
+\usepackage{csquotes}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, fit, backgrounds, positioning, matrix, decorations.pathreplacing, calc}
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!50]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!20]
+\tikzstyle{database} = [cylinder, minimum width=3cm, minimum height=2cm, text centered, shape border rotate=90, aspect=0.25, draw=black, fill=yellow!30]
+\tikzstyle{arrow} = [thick, ->, >=stealth]
+\tikzstyle{line} = [-Latex]
+\newcommand{\inline}[2]{%
+    \begin{tikzpicture}[baseline=(word.base), txt/.style={shape=rectangle, inner sep=0pt}]
+        \node[txt] (word) {\texttt{#1}};
+        \node[above] at (word.north) {\footnotesize{#2}};
+    \end{tikzpicture}%
+}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+
+\setlength{\columnseprule}{0.4pt}
+
+\title{Estudio sobre Sistemas de Antialiasing}
+\author{Hugo Ferrando Seage}
+\college{U-Tad}
+\submissiondate{septiembre 2018\\Director: Alberto Sánchez Campos}
+\date{July 2018}
+\fecha{julio 2018}
+
+% PDF meta-info
+\subjectline{Máster en Computación Gráfica y Simulación}
+% max 6
+\keywords{opengl antialiasing temporal}
+
+% Abstract
+\espabstract{%
+}
+
+\abstract{%
+}
+
+% Acknowledgements
+\acknowledgements{%
+}
+
+% Glossary
+
+% Acronyms
+
+% Contents
+\begin{document}
+\frontmatter{}
+
+% Thesis body:
+\chapter{Introducción}
+\section{¿Qué es el antialiasing?}
+
+% Bibliography:
+\nocite{*}
+\printbibliography{}
+
+\listoffigures
+\listoftables
+
+% Index
+\printthesisindex{}
+
+\end{document}
