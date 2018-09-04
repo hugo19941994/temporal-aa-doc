@@ -6,9 +6,9 @@ thesis: thesis.tex
 	pdflatex --shell-escape thesis.tex
 	#makeindex thesis
 	#makeglossaries thesis
-	#biber thesis
-	#pdflatex --shell-escape thesis.tex
-	#pdflatex --shell-escape thesis.tex
+	biber thesis
+	pdflatex --shell-escape thesis.tex
+	pdflatex --shell-escape thesis.tex
 
 presentation:
 	xelatex presentation.tex

@@ -37,3 +37,10 @@ _minted-thesis
 *.lot
 _minted-*
 venv
+
+# converted logo
+u-tad-eps-converted-to.pdf
+
+._.DS_Store
+._thesis.pdf
+figures/.*
