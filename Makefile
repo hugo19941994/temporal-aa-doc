@@ -4,8 +4,8 @@ all: thesis presentation clean
 
 thesis: thesis.tex
 	pdflatex --shell-escape thesis.tex
-	#makeindex thesis
-	#makeglossaries thesis
+	makeindex thesis
+	makeglossaries thesis
 	biber thesis
 	pdflatex --shell-escape thesis.tex
 	pdflatex --shell-escape thesis.tex

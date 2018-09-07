@@ -515,10 +515,10 @@ in partial fulfilment of the requirements
 \@espabstract{}
 \vspace{15mm}
 
-\begin{flushright}
-\@author{}\\
-\@date{}\\
-\end{flushright}
+%\begin{flushright}
+%\@author{}\\
+%\@date{}\\
+%\end{flushright}
 \vfill
 
 
@@ -558,10 +558,10 @@ in partial fulfilment of the requirements
 % Leaving some space for the signature:
 \vspace{15mm}
 
-\begin{flushright}
-\@author{}\\
-\@date{}\\
-\end{flushright}
+%\begin{flushright}
+%\@author{}\\
+%\@date{}\\
+%\end{flushright}
 \vfill
 \fi
 \fi}
@@ -580,9 +580,9 @@ in partial fulfilment of the requirements
 {\ifcam@secondyr
 %
 \else
-\chapter*{Agradecimientos}
-\thispagestyle{empty}
-\@acknowledgements{}
+%\chapter*{Agradecimientos}
+%\thispagestyle{empty}
+%\@acknowledgements{}
 \fi}
 \fi
 
