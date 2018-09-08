@@ -133,8 +133,34 @@ Per pixel motion blur (ps3+)
 Per object motion blur (ps3+)
 
 \chapter{Objetivos}
-Este proyecto se ha planteado desde desde dos perspectivas. La primera es la de analizar el estado del arte en el campo de la computación gráfica en el tema de algoritmos de anti-aliasing. El otro objetivo es el de crear una 
+
+Este proyecto tiene dos objetivos principales:
+
+\begin{enumerate}
+    \item Analizar el estado del arte en el campo de la computación gráfica en relación al anti-aliasing. Explorar los problemas que presenta el aliasing en gráficos 2D y 3D, la evolución de las soluciones y los desarrollos en curso.
+    \item El segundo objetivo es el de integrar una solución de anti-aliasing temporal a un motor gráfico 3D existente desarrollado durante la asignatura de \"APIs tridimensionales\" del Máster en Computación Gráfica y Simulación cursado.
+\end{enumerate}
+
 \chapter{Estado del Arte}
+
+\section{Filtrado}
+
+En gráficos raster (bidimensionales) el anti-aliasing se realiza mediante filtros.Para entender el filtrado en imágenes es necesario pensar en pixels no como pequeños cuadrados en una pantalla, si no en muestras de una función (normalmente 3 muestras, una por cada canal RGB)\cite{Smith95apixel}. Los filtros (o kernels) transforman las funciones para intentar suavizar los cambios bruscos de color.
+
+En la figura~\ref{gls} se muestra una comparación de las diferentes formas en las que cada filtro interpola valores de una imagen con un solo canal. Cada punto representa la muestra de la función que se visualizará en la pantalla.
+
+%\cite{resampling}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{figures/Lw6ei.png}
+    \caption{Comparación de interpolación usando diferentes filtros\cite{gis}}
+    \label{gls}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{figures/comparison-filter.png}
+    \caption{Comparación de resultados de diferentes filtros\cite{resampling2}}
+\end{figure}
 
 \section{Supersampling Antialiasing}
 
@@ -164,6 +190,10 @@ La calidad del supersampling viene dado por la cantidad de samples por pixel y l
 
 \section{Multisampling}
 
+Multisampling es una optimización del supersampling. Se sigue usando subpixels, pero en vez de resolver el color para cada subpixel el color se resuelve una única vez por pixel. Después de resolver el color se calcula el stencil buffer y depth buffer con subpixels, y dependiendo de la cantidad de subpixels que estén contenidos dentro del triangulo se usará un porcentaje del valor del color calculado. Esto reduce drásticamente el impacto en el rendimiento de la aplicación, ya que solo hay que acceder una vez por pixel a la textura, pero solo soluciona aliasing en los bordes de la geometría.
+
+En el centro de un polígono todos los subpixels van a estar contenidos dentro, pero el color solo se calcula una vez (por ejemplo en el centro del pixel), por lo que se usará el 100\% del color, pero puede contener aliasing. En cambio, en los bordes, algún subpixel estará fuera de la geometría, por lo que se usará un porcentaje del color calculado, suavizando el borde.
+
 \section{Post Processing Antialiasing}
 
 Este tipo de antialiasing ha ganado popularidad durante los últimos años, debido en parte al uso del deferred shading en los últimos motores gráficos.
@@ -182,7 +212,7 @@ smaa
 
 \subsection{Temporal Antialiasing}
 
-El temporal antialiasing es un tipo de antialiasing de post procesado, pero que amortiza el coste computacional usando múltiples samples en multiples frames. Esto presenta unas complicaciones a la hora de escoger samples en frames anteriores en imágenes no estáticas.
+El temporal antialiasing es un tipo de antialiasing de post procesado, pero que amortiza el coste computacional usando múltiples samples en múltiples frames. Esto presenta unas complicaciones a la hora de escoger samples en frames anteriores en imágenes no estáticas.
 
 \chapter{Desarrollo}
 
