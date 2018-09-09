@@ -144,6 +144,7 @@ Este proyecto tiene dos objetivos principales:
 \chapter{Estado del Arte}
 
 \section{Filtrado}
+\label{filtros}
 
 En gráficos raster (bidimensionales) el anti-aliasing se realiza mediante filtros.Para entender el filtrado en imágenes es necesario pensar en pixels no como pequeños cuadrados en una pantalla, si no en muestras de una función (normalmente 3 muestras, una por cada canal RGB)\cite{Smith95apixel}. Los filtros (o kernels) transforman las funciones para intentar suavizar los cambios bruscos de color.
 
@@ -151,13 +152,13 @@ En la figura~\ref{gls} se muestra una comparación de las diferentes formas en l
 
 %\cite{resampling}
 
-\begin{figure}
+\begin{figure}[!htb]
     \includegraphics[width=\linewidth]{figures/Lw6ei.png}
     \caption{Comparación de interpolación usando diferentes filtros\cite{gis}}
     \label{gls}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[!htb]
     \includegraphics[width=\linewidth]{figures/comparison-filter.png}
     \caption{Comparación de resultados de diferentes filtros\cite{resampling2}}
 \end{figure}
@@ -170,23 +171,45 @@ Estas técnicas consumen más ancho de banda y memoria, ya que los buffers tiene
 
 La calidad del supersampling viene dado por la cantidad de samples por pixel y la técnica para saber que pixels usar en la imagen con mayor resolución para cada pixel de la pantalla.
 
+En comparación a otras técnicas de antialiasing esta corrige aliasing de texturas y especular, además de aliasing de geometría. Esto se debe a que los subsamples los coge de en toda la escena.
+
 %http://www.x86-secret.com/articles/divers/v5-6000/datasheets/FSAA.pdf
 
 \subsection{Ordered Grid Supersampling}
 
-\begin{figure}
+En esta técnica de supersampling la distribución de los samples es uniforme. Debido a la naturaleza regular de este patrón, los subpixels se encuentran situados en forma de dos columnas y dos filas. Para lineas muy planas, tanto en horizontal como vertical el antialiasing no será muy efectivo, ya que muy rápidamente tocará dos subpixels en fila o columna y hasta el final no tocará los otros subpixels\ref{ogss}.
+
+Este efecto se puede reducir usando más samples, pero el impacto en el rendimiento será todavía mayor.
+
+Desde 2014 Nvidia ha publicado una técnica llamada Dynamic Super Resolution\cite{960}, que consiste en renderizar software a mayor resolución y usar OGSS con un filtro de blur gaussiano. En 2015 AMD implementó una técnica similar llamada Virtual Super Resolution.
+
+\begin{figure}[!htb]
     \includegraphics[width=\linewidth]{figures/ogss.png}
     \caption{Ordered Grid Super-Sampling\cite{Beets2000SupersamplingAA}}
+    \label{ogss}
 \end{figure}
 
 \subsection{Rotated Grid Supersampling}
 
-\begin{figure}
+Aquí la idea es cambiar el lugar de los subsamples para minimizar la cantidad de columnas y filas. La distribución sigue siendo uniforme, pero el problema del aliasing en lineas muy planas se soluciona\ref{rgss} sin tener que recurrir a aumentar de manera significativa el numero de subsamples.
+
+\begin{figure}[!htb]
     \includegraphics[width=\linewidth]{figures/rgss.png}
     \caption{Rotated Grid Super-Sampling\cite{Beets2000SupersamplingAA}}
+    \label{rgss}
 \end{figure}
 
-\subsection{Sparse Grid Supersampling}
+\subsection{Quincunx Supersampling}
+
+Este patrón es interesante como técnica de supersampling ya que usa subsamples localizados en las esquinas de los pixels, lo que permite reutilizar varios subsamples entre pixels\ref{fig:quincunx}. Esto permite una calidad similar a la de un antialiasing 4x pero con un coste computacional de un supersampling 2x. Aún así al reutilizar subsamples produce resultados algo más borrosos que otros métodos.
+
+Aunque este patrón se pueda usar para supersampling Nvidia lo implementó en hardware desde la GeForce 3\cite{hraa} para acelerar el calculo de su multisampling. Sony al utilizar una GPU de Nvidia en la PS3 también disponía de esta tecnología en la consola.
+
+\begin{figure}[!htb]
+    \includegraphics[width=\linewidth]{figures/quincunx.png}
+    \caption{Quincunx Pattern\cite{hraa}}
+    \label{fig:quincunx}
+\end{figure}
 
 \section{Multisampling}
 
@@ -194,13 +217,15 @@ Multisampling es una optimización del supersampling. Se sigue usando subpixels,
 
 En el centro de un polígono todos los subpixels van a estar contenidos dentro, pero el color solo se calcula una vez (por ejemplo en el centro del pixel), por lo que se usará el 100\% del color, pero puede contener aliasing. En cambio, en los bordes, algún subpixel estará fuera de la geometría, por lo que se usará un porcentaje del color calculado, suavizando el borde.
 
+Otra de las desventajas del multisampling anti-aliasing es que, tradicionalmente, no se puede usar en motores con deferred shading. Debido a que el calculo del color final de cada pixel se realiza en un pixel shader posterior al calculo del g-buffer, al hacer el resolve del mutisampling no esta lista toda la información necesaria. Desde OpenGL 3.2 y Direct3D 10.1 esto ha cambiado gracias al explicit multisampling\cite{textureMultisample}. La creación del g-buffer ahora se puede realizar usando texturas mltisampled y al calcular la luz se puede acceder a los subsamples mediante la función texelfetch. Si se realiza de esta forma hay que sacrificar la creación automática de mipmaps y filtrado de texturas, aunque siempre se pueden implementar manualmente en sahders. Aún así muchas desarrolladores han optado por usar post-processing antialiasing al usar deferred shading.
+
 \section{Post Processing Antialiasing}
 
-Este tipo de antialiasing ha ganado popularidad durante los últimos años, debido en parte al uso del deferred shading en los últimos motores gráficos.
+Este tipo de antialiasing ha ganado popularidad durante los últimos años, debido en parte al uso del deferred shading en los últimos motores gráficos. Los algoritmos presentados a continuación se pueden considerar filtros de rasters, como los de la sección\ref{filtros}, pero están pensados para ser usados en motores gráficos. Además, en muchos casos, usan información que no esta presente en la textura final, como pueden ser texturas de profundidad o vectores de movimiento,
 
 \subsection{Fast Approximate Anti-aliasing}
 
-El FXAA\cite{FXAA} es un sistema de anti-aliasing de post procesado desarrollado por NVIDIA.
+El FXAA\cite{FXAA} es un sistema de anti-aliasing de post procesado desarrollado por NVIDIA\@.
 
 \subsection{Morphological Antialiasing}
 %https://software.intel.com/en-us/articles/morphological-antialiasing-mlaa-sample
@@ -216,7 +241,7 @@ El temporal antialiasing es un tipo de antialiasing de post procesado, pero que 
 
 \chapter{Desarrollo}
 
-Para este proyecto se ha integrado un sistema de anti-aliasing temporal en un motor de gráficos 3D que usa \Gls{opengl} com API gráfica.
+Para este proyecto se ha integrado un sistema de anti-aliasing temporal en un motor de gráficos 3D que usa \Gls{opengl} como API gráfica.
 
 \section{Jitter}
 
@@ -230,17 +255,17 @@ Para este proyecto se ha integrado un sistema de anti-aliasing temporal en un mo
 
 \chapter{Resultados}
 
-\begin{figure}
+\begin{figure}[!htb]
     \includegraphics[width=\linewidth]{figures/taaoff.png}
     \caption{Anti-aliasing off}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[!htb]
     \includegraphics[width=\linewidth]{figures/taa8.png}
     \caption{Temporal anti-aliasing con 8 samples}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[!htb]
     \includegraphics[width=\linewidth]{figures/taa16.png}
     \caption{Temporal anti-aliasing con 16 samples}
 \end{figure}
