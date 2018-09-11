@@ -409,10 +409,18 @@ in partial fulfilment of the requirements
 %% LOGO box
 \newlength{\cam@logorightnudge}
 \setlength{\cam@logorightnudge}{-0.5\paperwidth+12mm}
-\newsavebox{\cam@logo}
-\begin{lrbox}{\cam@logo}
-    \hspace*{\cam@logorightnudge}\includegraphics[width=73mm]{figures/u-tad.eps}
-\end{lrbox}
+%\newsavebox{\cam@logo}
+%\begin{lrbox}{\cam@logo}
+    %\hspace*{\cam@logorightnudge}\includegraphics[width=73mm]{figures/u-tad.eps}
+    %\includegraphics[width=60mm]{figures/cjc.png}
+  \setlength{\tabcolsep}{0pt}
+  \begin{tabular}{>{\raggedleft}m{2.5cm}>{\centering}m{\dimexpr\textwidth - 10cm\relax}>{\raggedright}m{2.5cm}}
+      \includegraphics[width=60mm]{figures/u-tad.eps}%
+  &%
+  &%
+  \includegraphics[width=60mm]{figures/cjc.png} %
+  \end{tabular}
+%\end{lrbox}
 
 %% THESIS TITLE box
 \newsavebox{\cam@title}
@@ -469,7 +477,7 @@ in partial fulfilment of the requirements
 % Now calculate the exact free vertical space
 \newlength{\cam@titlepagevspace}
 \setlength{\cam@titlepagevspace}{\textheight%
-	-\totalheightof{\usebox{\cam@logo}}%
+	%-\totalheightof{\usebox{\cam@logo}}%
 	-\totalheightof{\usebox{\cam@submitnotice}}%
 	-\totalheightof{\usebox{\cam@authorcollege}}%
 	-\totalheightof{\usebox{\cam@title}}}
@@ -483,8 +491,8 @@ in partial fulfilment of the requirements
 %%%%%
 \begin{center}
 ~\vspace{.02\cam@titlepagevspace}\\
-{\usebox{\cam@logo}}\\
-\vspace{.28\cam@titlepagevspace}
+%{\usebox{\cam@logo}}\\
+\vspace{.20\cam@titlepagevspace}
 {\usebox{\cam@title}}\\
 \vspace{.23\cam@titlepagevspace}
 {\usebox{\cam@authorcollege}}\\
