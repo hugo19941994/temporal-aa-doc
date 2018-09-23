@@ -10,6 +10,7 @@
 \usepackage{graphicx}
 \usepackage{lmodern}
 \usepackage{cleveref}
+\usepackage{amsmath}
 
 \usepackage{hyperref}
 \addto\extrasspanish{%
@@ -55,6 +56,8 @@
 \pgfplotsset{compat=newest}
 
 \setlength{\columnseprule}{0.4pt}
+\linespread{1.25}
+
 
 \title{Máster Universitario en Computación Gráfica y Simulación\protect\\\bigskip \normalfont{2018\protect\\\bigskip Trabajo Final de Máster\protect\\\bigskip Estudio sobre sistemas de anti-aliasing e implementación de anti-aliasing temporal}}
 \author{Hugo Ferrando Seage}
@@ -71,15 +74,15 @@
 
     El anti-aliasing se ha vuelto una técnica crucial para mejorar la calidad de imagen en el software con gráficos tridimensionales. Este campo de la computación gráfica lleva años desarrollandose, con nuevas técnicas publicadas continuamente.
 
-    Este proyecto tiene como objetivo el análisis de las distintas técnicas existentes en el estado del arte y la implementación de un algoritmo de temporal anti-aliasing, compatible con motores con deferred shading y comparable en calidad al multisampling, junto a otras propiedades.
+    Este proyecto tiene como objetivo el análisis de las distintas técnicas existentes en el estado del arte y la implementación de un algoritmo de anti-aliasing temporal, compatible con motores con deferred shading y comparable en calidad al multisampling, junto a otras propiedades.
 }
 
 \abstract{%
-    When rasterizing 3D graphics using computer screens, due to their limited resolution some lines and curves will become deformed. This phenomena is called aliasing. The ever increasing demand for more realistic graphics has driven the creation of new techniques and algorithms to hide these artifacts, without necessarily using higher resolution screens.
+    When rasterizing 3D graphics using computer screens, due to their limited resolution, some lines and curves will become deformed. This phenomena is called aliasing. The ever increasing demand for more realistic graphics has driven the creation of new techniques and algorithms to hide these artifacts, without necessarily using higher resolution screens.
 
     Anti-aliasing has become a crucial technique to advance image quality in graphics software. This field has been explored for years, with new approaches being developed continually.
 
-    This projects aims to analyze different anti-aliasing techniques developed and the implementation of a temporal anti-aliasing technique, compatible with deferred shading engines and with similar quality to mutlisampling, amongst other benefits.
+    This projects aims to analyze different anti-aliasing techniques developed and the implementation of a temporal anti-aliasing technique, compatible with deferred shading engines and with a similar quality to multisampling, amongst other benefits.
 }
 
 % Glossary
@@ -122,11 +125,13 @@
 % Thesis body:
 \chapter{Introducción}
 
-La generación de efectos visuales y el uso de la computación gráfica cada vez es más utilizada tanto en ámbitos lúdicos como películas y videojuegos, como en aplicaciones civiles, educativas, médicas o psicológicas. El realismo exigido por los usuarios es grande, pues el entrenamiento permanente de consumo de gráficos por ordenador ha provocado que las expectativas de cualquier gráfico o imagen sean elevadas. Si bien la tecnología ha avanzado considerablemente en los últimos años, la calidad exigida en 2D y 3D provoca la eminente necesidad de optimizar los procesos de simulación o renderizado. 
+La calidad de imagen exigida en las aplicaciones gráfica es cada vez mayor, tanto en ámbitos lúdicos como para la generación de efectos visuales en películas o en videojuegos, como en aplicaciones civiles, educativas, médicas\cite{rayos}, o psicológicas. El realismo exigido por los usuarios es grande, pues el entrenamiento permanente de consumo de gráficos por ordenador ha provocado que las expectativas de cualquier gráfico o imagen sean elevadas. Si bien la tecnología no ha parado de avanzar, la calidad exigida tanto en aplicaciones 2D como 3D provoca la eminente necesidad de optimizar procesos de simulación o renderizado.
 
-Uno de los claros ejemplos donde donde ha sido necesario estas optimizaciones ha sido en las técnicas usadas para realizar anti-aliasing.
+Una de las técnicas a optimizar es el anti-aliasing, ya que aporta más credibilidad a cualquier escena 3D e incluso en imágenes 2D. Uno de los ámbitos donde es imprescindible el anti-aliasing es en el renderizado de textos de los sistemas operativos gráficos, como los de escritorio o móviles. Los programas de edición de imágenes también cuentan con numerosos algoritmos de anti-aliasing con el objetivo de mejorar las imágenes o fotos.
 
-Técnicas como el supersampling o multisampling se estan quedando obsoletas debido a la resolucion de las pantallas y el uso del deferred shading. Otras técnicas como el post-processing anti-aliasing no resuelven problemas como el 
+Debido a la resolución limitada de las pantallas, será necesario usar este tipo de técnicas para emular la calidad que ofrecen las pantallas con una mayor densidad de pixels. Por la potencia del hardware actual, las técnicas tradicionales como el supersampling para realizar dicho efecto es impráctico. Por esa razón ha sido necesario el desarrollo de algoritmos más sofisticados que alcanzan una calidad similar, pero con un impacto en el rendimiento más asequible.
+
+En definitiva, el aliasing es un problema fundamental en la computación gráfica y a día de hoy no existen ningún algoritmo perfecto que lo solucione a tiempo real. Por ese motivo existen una multitud de alternativas, cada una con sus ventajas e inconvenientes, que se exploran en este trabajo final de máster.
 
 \chapter{Planteamiento del problema}
 
@@ -134,7 +139,7 @@ El aliasing siempre ha sido un problema en el campo de la computación gráfica.
 
 Durante la década de los 80 y buena parte de los 90 hubo un avance constante en términos de potencia, resolución y la capacidad de mostrar cada vez más colores (por ejemplo del paso de gráficos CGA a VGA). Aún así el rendimiento necesario para aplicar muchas de las técnicas de anti-aliasing solo se podían usar con workstations profesionales, como las IRIS de Silicon Graphics.
 
-A mediados de los 90, con la llegada de la tarjetas aceleradores de gráficos 3D a ordenadores mas modestos las compañías como ATI, NVIDIA y 3DFX empezaron a integrar soluciones de anti-aliasing a sus productos y APIs.
+A mediados de los 90, con la llegada de la tarjetas aceleradores de gráficos 3D a ordenadores más modestos, las compañías como ATI, NVIDIA y 3DFX empezaron a integrar soluciones de anti-aliasing a sus productos y APIs.
 
 A la vez que evolucionaba el hardware los gráficos cada vez requerían más potencia. Las técnicas como el supersampling reducen drásticamente el rendimiento, por lo que en muchos casos se empezaron a usar optimizaciones como el multisampling.
 
@@ -155,21 +160,27 @@ Este proyecto tiene dos objetivos principales:
 
 \section{Tipos de Aliasing}
 
-El aliasing es la deformación de ciertos elementos gráficos al ser rasterizados y plasmados en una pantalla con una resolución finita\cite{Mitchell:1988:RFC:378456.378514}. Normalmente los bordes de la geometría que tengan ángulos que no se alineen perfectamente con los pixels presentaran bordes de sierra abruptos, que no es fiel a la escena como se vería de forma natural.
+El aliasing es la deformación de ciertos elementos gráficos al ser rasterizados y plasmados en una pantalla con una resolución finita\cite{Mitchell:1988:RFC:378456.378514}. Normalmente los bordes de la geometría que tengan ángulos que no se alineen perfectamente con los pixels presentarán bordes de sierra abruptos, que no son fieles a la escena como se vería de forma natural.
 
-Este proyecto se centra en aliasing dentro del campo de la computación gráfica, pero afecta a otras disciplinas, como el procesamiento de señales (por ejemplo al digitalizar señales de audio analógicas). En general, al representar valores continuos en algún medio discreto siempre habrá algún defecto de este tipo\cite{Mitchell:1988:RFC:378456.378514}.
+Este proyecto se centra en aliasing dentro del campo de la computación gráfica, pero afecta a otras disciplinas, como el procesamiento de señales (por ejemplo al digitalizar señales de audio analógicas). En general, al representar valores continuos en algún medio discreto siempre habrá algún defecto de este tipo\cite{Mitchell:1988:RFC:378456.378514}. Además el aliasing no solo es un problema en aplicaciones lúdicas. En al figura~\ref{skull} se puede apreciar aliasing en una radiografía.
+
+\begin{figure}[!htbp]
+    \includegraphics[width=.7\linewidth]{figures/skull.jpg}
+    \caption{Aliasing en una radiografía\cite{rayos}}
+    \label{skull}
+\end{figure}
 
 Existen otros tipos de aliasing, como en el interior de texturas o al mover la camera rápidamente.
 
 \subsection{Aliasing en bordes de geometría}
 
-Seguramente el aliasing más común y conocido en cuanto a la computación gráfica. Es un efecto que se produce en los bordes de la geometría de la escena. Este efecto se manifiesta como un borde con dientes de sierra, como en la figura \ref{hitmanaliasing}. Es apreciable sobre todo en líneas diagonales y en curvas, ya que en lineas planas (tanto horizontales como verticales) se alinean con el array de pixels de la pantalla.
+Seguramente el aliasing más común y conocido en cuanto a la computación gráfica. Es un efecto que se produce en los bordes de la geometría de la escena. Este efecto se manifiesta como un borde con dientes de sierra, como en la figura~\ref{hitmanaliasing}. Es apreciable sobre todo en líneas diagonales y en curvas, ya que en lineas planas (tanto horizontales como verticales) se alinean con el array de pixels de la pantalla.
 
-Esto es debido al point sampling que se emplea durante el rasterizado de la escena (figura \ref{pointsampling}).
+Esto es debido al point sampling que se emplea durante el rasterizado de la escena (figura~\ref{pointsampling}).
 
-Este tipo de aliasing también está muy ligado a la densidad de la pantalla donde se este viendo la escena. En un display con una densidad de pixels muy alta, siempre que el renderizado sea hecho con la misma resolución que la pantalla, será más difícil apreciar este tipo de aliasing. Aún así, con la tecnología actual, la densidad no siempre es lo suficientemente alta. Por ejemplo, una pantalla UHD (resolución $3840 \times 2160$) de 65" tiene una densidad de 67.78 DPI, donde el aliasing sigue siendo notable.
+Este tipo de aliasing también está muy ligado a la densidad de la pantalla donde se este viendo la escena. En un display con una densidad de pixels muy alta, siempre que el renderizado sea hecho con la misma resolución que la pantalla, será más difícil apreciar este tipo de aliasing. Aún así, con la tecnología actual, la densidad no siempre es lo suficientemente alta. Por ejemplo, una pantalla UHD (resolución $3840 \times 2160$) de 65'' tiene una densidad de 67.78 DPI, donde el aliasing sigue siendo notable.
 
-En pantallas de alta densidad (> 200 DPI \cite{googledpi}), como la de varios smartphones, este tipo de aliasing no se manifestará.
+En pantallas de alta densidad (> 200 DPI\cite{googledpi}), como la de varios smartphones, este tipo de aliasing no se manifestará.
 
 \begin{figure}[!htbp]
     \includegraphics[width=.7\linewidth]{figures/pointsampling.png}
@@ -207,19 +218,18 @@ Estas texturas se suelen usar para objetos que estén a alguna distancia determi
 
 \subsection{Specular Aliasing}
 
-El modelo clásico de iluminación usado en OpenGL consiste en componentes de luz ambiente, difusa y especular\cite{Shreiner:2013:OPG:2544032}. La iluminación especular se produce cuando la luz incide directamente sobre un material. Las propiedades del objeto dictarán como de brillante aparece.
+El modelo clásico de iluminación usado en \Gls{opengl} consiste en componentes de luz ambiente, difusa y especular\cite{Shreiner:2013:OPG:2544032}. La iluminación especular se produce cuando la luz incide directamente sobre un material. Las propiedades del objeto dictarán como de brillante aparece.
 
 Por ejemplo, un espejo es completamente especular, ya que refleja toda la luz que recibe. Otros materiales muy especulares son algunos metales y plásticos. En cambio, la pizarra es un objeto con un valor especular muy bajo y que no producirá apenas reflejos.
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=.8\linewidth]{figures/iluminacion.png}
-    \caption{Componentes de iluminación en OpenGL\@. Ambiente (superior izquierda), difuso (superior derecha) y especular (inferior)\cite{Shreiner:2013:OPG:2544032}}
+    \caption{Componentes de iluminación en \Gls{opengl}\@. Ambiente (superior izquierda), difuso (superior derecha) y especular (inferior)\cite{Shreiner:2013:OPG:2544032}}
     \label{gls}
 \end{figure}
 
-El cálculo de esos reflejos pueden contener aliasing, al igual que las texturas. En la figura~\ref{specular} se puede apreciar como los reflejos de un suelo metálico
-Debido al mismo problema que en el aliasing dentro de texturas
+El cálculo de esos reflejos pueden contener aliasing, al igual que las texturas. En la figura~\ref{specular} se puede apreciar como los reflejos de un suelo metálico debido al mismo problema que en el aliasing dentro de texturas.
 
 \begin{figure}[!htbp]
     \centering
@@ -262,7 +272,7 @@ Con la llegada de los shaders se empezó a usar per pixel motion blur. Esta téc
 
 El per object motion blur es un refinamiento de la anterior, donde en vez de calcular donde estaba cada pixel en el frame anterior, el cálculo se hace por cada polígono de la escena por separado. Eso significa que es posible añadir más blurring a algún objeto y dejar el resto de la escena con mayor detalle, como en la figura~\ref{doomblur}
 
-Como se puede ver en la figura~\ref{crysisblur}, estos tipo de blurring puede crear un efecto de silueta, pero dependen de la implementación. La cantidad de samples usados para la generación del blurring también afecta a la calidad del mismo (y rendimiento), como se puede apreciar en la figura~\ref{blurringquality}.
+Como se puede ver en la figura~\ref{crysisblur}, estos tipo de blurring puede crear un efecto de silueta, pero depende de la implementación. La cantidad de samples usados para la generación del blurring también afecta a la calidad del mismo (y rendimiento), como se puede apreciar en la figura~\ref{blurringquality}.
 
 \begin{figure}[!htbp]
     \centering
@@ -292,12 +302,12 @@ Como se puede ver en la figura~\ref{crysisblur}, estos tipo de blurring puede cr
 
 \section{Tipos de Anti-aliasing}
 
-El anti-aliasing es el conjunto de técnicas cuyo objetivo es el de disimular o eliminar imperfecciones vistas anteriormente.
+El anti-aliasing es el conjunto de técnicas cuyo objetivo es el de disimular o eliminar las imperfecciones vistas anteriormente.
 
 \subsection{Filtrado}
 \label{filtros}
 
-En gráficos raster (bidimensionales) el anti-aliasing se realiza mediante filtros.Para entender el filtrado en imágenes es necesario pensar en pixels no como pequeños cuadrados en una pantalla, si no en muestras de una función (normalmente 3 muestras, una por cada canal RGB)\cite{Smith95apixel}. Los filtros (o kernels) transforman las funciones para intentar suavizar los cambios bruscos de color.
+En gráficos raster (bidimensionales) el anti-aliasing se realiza mediante filtros. Para entender el filtrado en imágenes es necesario pensar en pixels no como pequeños cuadrados en una pantalla, si no en muestras de una función (normalmente 3 muestras, una por cada canal RGB)\cite{Smith95apixel}. Los filtros (o kernels) transforman las funciones para intentar suavizar los cambios bruscos de color.
 
 En la figura~\ref{gls} se muestra una comparación de las diferentes formas en las que cada filtro interpola valores de una imagen con un solo canal. Cada punto representa la muestra de la función que se visualizará en la pantalla.
 
@@ -391,15 +401,15 @@ Aunque este patrón se pueda usar para supersampling Nvidia lo implementó en ha
 
 \subsection{Multisampling}
 
-Multisampling es una optimización del supersampling. Se sigue usando subpixels, pero en vez de resolver el color para cada subpixel el color se resuelve una única vez por pixel. Después de resolver el color se calcula el stencil buffer y depth buffer con subpixels, y dependiendo de la cantidad de subpixels que estén contenidos dentro del triangulo se usará un porcentaje del valor del color calculado. Esto reduce drásticamente el impacto en el rendimiento de la aplicación, ya que solo hay que acceder una vez por pixel a la textura, pero solo soluciona aliasing en los bordes de la geometría\cite{nvidiamsaa}\cite{msaa}.
+El multisampling es una optimización del supersampling. Se siguen usando subpixels, pero en vez de resolver el color para cada subpixel el color se resuelve una única vez por pixel. Después de resolver el color se calcula el stencil buffer y depth buffer con subpixels, y dependiendo de la cantidad de subpixels que estén contenidos dentro del triangulo se usará un porcentaje del valor del color calculado. Esto reduce drásticamente el impacto en el rendimiento de la aplicación, ya que solo hay que acceder una vez por pixel a la textura, pero solo soluciona aliasing en los bordes de la geometría\cite{nvidiamsaa}\cite{msaa}.
 
 En el centro de un polígono todos los subpixels van a estar contenidos dentro, pero el color solo se calcula una vez (por ejemplo en el centro del pixel), por lo que se usará el 100\% del color, pero puede contener aliasing. En cambio, en los bordes, algún subpixel estará fuera de la geometría, por lo que se usará un porcentaje del color calculado, suavizando el borde.
 
-Otra de las desventajas del multisampling anti-aliasing es que, tradicionalmente, no se puede usar en motores con deferred shading. Debido a que el calculo del color final de cada pixel se realiza en un pixel shader posterior al cálculo del g-buffer (figura \ref{gbuffer}), al hacer el resolve del mutisampling no esta lista toda la información necesaria. Desde OpenGL 3.2 y Direct3D 10.1 esto ha cambiado gracias al explicit multisampling\cite{textureMultisample}. La creación del g-buffer ahora se puede realizar usando texturas multisampled y al calcular la luz se puede acceder a los subsamples mediante la función texelfetch. Si se realiza de esta forma hay que sacrificar la creación automática de mipmaps y filtrado de texturas, aunque siempre se pueden implementar manualmente en shaders. Aún así muchos desarrolladores han optado por usar post-processing anti-aliasing al usar deferred shading.
+Otra de las desventajas del multisampling anti-aliasing es que, tradicionalmente, no se puede usar en motores con deferred shading. Debido a que el calculo del color final de cada pixel se realiza en un pixel shader posterior al cálculo del g-buffer (figura \ref{gbuffer}), al hacer el resolve del mutisampling no está lista toda la información necesaria. Desde \Gls{opengl} 3.2 y Direct3D 10.1 esto ha cambiado gracias al explicit multisampling\cite{textureMultisample}. La creación del g-buffer ahora se puede realizar usando texturas multisampled y al calcular la luz se puede acceder a los subsamples mediante la función texelfetch. Si se realiza de esta forma hay que sacrificar la creación automática de mipmaps y filtrado de texturas, aunque siempre se pueden implementar manualmente en shaders. Aún así muchos desarrolladores han optado por usar post-processing anti-aliasing al usar deferred shading.
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/msaasample.png}
-    \caption{}
+    \caption{Multisampling}
     \label{msaasample}
 \end{figure}
 
@@ -426,13 +436,13 @@ Otra de las desventajas del multisampling anti-aliasing es que, tradicionalmente
 
 \subsection{Post Processing Anti-aliasing}
 
-Este tipo de anti-aliasing ha ganado popularidad durante los últimos años, debido en parte al uso del deferred shading en los últimos motores gráficos. Los algoritmos presentados a continuación se pueden considerar filtros de rasters, como los de la sección~\ref{filtros}, pero están pensados para ser usados en motores gráficos. Además, en muchos casos, usan información que no esta presente en la textura final, como pueden ser texturas de profundidad o vectores de movimiento,
+Este tipo de anti-aliasing ha ganado popularidad durante los últimos años, debido en parte al uso del deferred shading en los últimos motores gráficos. Los algoritmos presentados a continuación se pueden considerar filtros de rasters, como los de la sección~\ref{filtros}, pero están pensados para ser usados en motores gráficos. Además, en muchos casos, usan información que no está presente en la textura final, como pueden ser texturas de profundidad o vectores de movimiento,
 
 \subsubsection{Fast Approximate Anti-aliasing}
 
-El FXAA\cite{FXAA} es un sistema de anti-aliasing de post procesado desarrollado por NVIDIA\@. Se implementa como un único pixel shader y tiene diferentes niveles de cálidad. El impacto en su rendimiento es muy bajo en comparación a métodos con resultados similares (inferior a 1ms).
+El FXAA\cite{FXAA} es un sistema de anti-aliasing de post procesado desarrollado por NVIDIA\@. Se implementa como un único pixel shader y tiene diferentes niveles de calidad. El impacto en su rendimiento es muy bajo en comparación a métodos con resultados similares (inferior a 1ms).
 
-Recibe la imagen final en formato RGB y la transforma en valores de luminancia por pixel. Usando el contraste entre pixels adeyacentes detecta los bordes (figura \ref{fxaaedge}). Cada borde es clasificado como horizontal o vertical. Dependiendo de los valores de luminancia y orientación de cada borde se aplica un pequeño offset para cada pixel y se hace un resampling para calcular un nuevo color que reduzca el aliasing\cite{fxaa}\cite{fxaa2}.
+Recibe la imagen final en formato RGB y la transforma en valores de luminancia por pixel. Usando el contraste entre pixels adyacentes detecta los bordes (figura \ref{fxaaedge}). Cada borde es clasificado como horizontal o vertical. Dependiendo de los valores de luminancia y orientación de cada borde se aplica un pequeño offset para cada pixel y se hace un resampling para calcular un nuevo color que reduzca el aliasing\cite{FXAA}\cite{fxaa2}.
 
 \begin{figure}[!htbp]
     \includegraphics[width=\linewidth]{figures/fxaaedge.png}
@@ -448,7 +458,7 @@ Recibe la imagen final en formato RGB y la transforma en valores de luminancia p
 
 \subsubsection{Morphological Anti-aliasing}
 
-Detección bordes\cite{Reshetov:2009:MA:1572769.1572787}. Diferencia entre bordes en forma de U, Z y L.
+El MLAA\cite{Reshetov:2009:MA:1572769.1572787} se basa en buscar los bordes discontinuos basándose en los colores de los pixels. Consigue discernir entre bordes con forma de $U$, $Z$ y $L$. Finalmente mezclará los bordes con los colores de los pixels adyacentes.
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/mlaacomparison.png}
@@ -457,13 +467,39 @@ Detección bordes\cite{Reshetov:2009:MA:1572769.1572787}. Diferencia entre borde
 \end{figure}
 
 \begin{figure}[!htbp]
-    \includegraphics[width=.8\linewidth]{figures/mlaares.png}
+    \includegraphics[width=\linewidth]{figures/mlaares.png}
     \caption{MLAA con color}
     \label{mlaacomparison}
 \end{figure}
 
 \subsubsection{Enhanced Subpixel Morphological Anti-aliasing}
-smaa
+
+El SMAA\cite{Jimenez:2012:SES:2318858.2318861} se basa en MLAA, pero aplicando unas variaciones con el fin de mejorar el resultado final. La calidad de imagen es más elevado, pero tiene un coste computacional algo mayor.
+
+Las variaciones con respecto a MLAA son:
+
+\begin{itemize}
+    \item Consigue clasificar más formas de bordes, incluidas las lineas diagonales
+    \item Usa contraste local en vez de color como métrica de comparación de valores entre pixels
+    \item Puede funcionar con más de un sample por pixel, junto a un supersampling tradicional
+\end{itemize}
+
+En la figura \ref{halo1} se puede ver la calidad del resultado final. Como con el resto de técnicas de anti-aliasing de post-procesado, aunque la aplicación no tenga soporte nativo para SMAA (como es el caso de Halo 1) se puede inyectar mediante software, gracias a que se ejecuta como una pasada final a la imagen.
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.8\textwidth}
+        \includegraphics[width=\textwidth]{figures/smaaOFF.png}
+        \caption{Anti-aliasing desactivado}
+    \end{subfigure}
+    \centering
+    \begin{subfigure}[b]{0.8\textwidth}
+        \includegraphics[width=\textwidth]{figures/smaaON.png}
+        \caption{SMAA}
+    \end{subfigure}
+    \caption{Comparación de antialiasing en Halo 1 (2001)}
+    \label{halo1}
+\end{figure}
 
 \subsection{Temporal Anti-aliasing}
 
@@ -491,21 +527,28 @@ Nvidia, desde la arquitectura Turing, ha comenzado a explotar estas técnicas pa
 
 \chapter{Desarrollo}
 
-Para este proyecto se ha integrado un sistema de anti-aliasing temporal en un motor de gráficos 3D que usa \Gls{opengl} como API gráfica.
+Para este proyecto se ha integrado un sistema de anti-aliasing temporal en un motor de gráficos 3D que usa \Gls{opengl} como API gráfica. Su implementación se ha realizado mediante shaders GLSL y código C++ 14. El motor gráfico sobre el que se ha implementado es propio y se ha desarrollado durante el Máster Universitario en Computación Gráfica y Simulación de U-Tad en el curso 2017--2018.
 
-CONTAR PASOS DE MANERA GENERAL.
+De manera general, el motor ha tenido que ser modificado para incluir funcionalidad de post-procesado de imágenes mediante Frame Buffer Objects, métodos para la realización del jitter, y shaders que calculan el anti-aliasing en sí. No se ha empleado ninguna funciona de anti-aliasing que proporciona \Gls{opengl} de manera automática, como el uso de texturas GL\_TEXTURE\_2D\_MULTISAMPLE\@.
+
+En primer lugar es necesario poder guardar el resultado del frame anterior, desplazar la cámara ligeramente cada frame (creando subsamples únicos en cada frame), calcular el desplazamiento de la cámara, mezclar colores del frame anterior al actual, y finalmente aplicar un filtro de sharpening.
 
 \section{History Buffer}
 
-Debido a la necesidad de combinar varias texturas de frames anteriores, para computar el anti-aliasing de un frame $n$ es necesario tener acceso al frame $n_{-1}$. Aún usando más de 2 subsamples solo es necesario guardar el último, siempre y cuando tenga el anti-aliasing ya incluido.
+Debido a la necesidad de combinar varias texturas de frames anteriores, para calcular el anti-aliasing de un frame $n$ es necesario tener acceso al frame $n_{-1}$. Aún usando más de 2 subsamples solo es necesario guardar el último, siempre y cuando tenga el anti-aliasing ya incluido.
 
 También se puede optar por guardar $n$ frames para $n$ subsamples y combinarlos en un pixel shader, pero esto ocupa mucha más memoria y es impráctico.
 
+Para esto es necesario crear un FBO y guardar el resultado de la textura como variable, que durante el siguiente frame será pasada al shader como un uniform sampler2D, y así poder acceder a sus pixels.
+
+\begin{minted}{cpp}
+\end{minted}
+
 \section{Jitter}
 
-En primer lugar es necesario elegir los subsamples a usar en cada frame. Recordemos que en vez de calcular varios subsamples en cada frame, el temporal anti-aliasing calcula un solo sample por frame. Cada frame cambiará el lugar del subsample a calcular Gracias a que solo se calcula un subsample por frame el impacto en el rendimiento será mucho menor al del supersampling tradicional.
+En primer lugar es necesario elegir los subsamples a usar en cada frame. Recordemos que en vez de calcular varios subsamples en cada frame, el temporal anti-aliasing calcula un solo sample por frame. Cada frame cambiará el lugar del subsample a calcular. Gracias a que solo se calcula un subsample por frame el impacto en el rendimiento será mucho menor al del supersampling tradicional.
 
-Para elegir los subsamples se pueden usar los grids vistos anteriormente en la sección sobre supersampling\cite{unrealtaa}. Aún así en la práctica se suelen usar secuencias de Halton (figura \ref{halton}).
+Para elegir los subsamples se pueden usar los grids vistos anteriormente en la sección sobre supersampling\cite{unrealtaa}. Aún así en la práctica se suelen usar secuencias de Halton (figura~\ref{halton}).
 
 Las secuencias de Halton proporcionan una baja discrepancia, lo que significa que no se van crear clusters ni en espacio ni en tiempo. Esto proporciona una calidad de subsamples muy alta por lo que la calidad del anti-aliasing puede ser muy elevado. Siempre que esté bien implementado los resultados serán mejores que los del anti-aliasing por hardware implementado hasta ahora\cite{unrealtaa}.
 
@@ -518,6 +561,21 @@ En este punto si viésemos la imagen seguiríamos notando el aliasing y la image
     \caption{Jitter con secuencia Halton}
     \label{halton}
 \end{figure}
+
+\begin{minted}{cpp}
+float Halton(int Index, int Base) {
+    float Result = 0.0f;
+    float InvBase = 1.0f / Base;
+    float Fraction = InvBase;
+    while (Index > 0)
+    {
+        Result += (Index % Base) * Fraction;
+        Index /= Base;
+        Fraction *= InvBase;
+    }
+    return Result;
+}
+\end{minted}
 
 \section{Motion Vectors}
 
@@ -537,19 +595,75 @@ En este proyecto se ha optado por usar el algoritmo descrito en el capítulo 27 
 
 Otra posibilidad es computar la velocidad durante una segunda pasada del vertex shader de cada polígono, pero dependiendo de su implementación puede resultar algo más lenta. Aún así debería resultar en vectores más precisos y en algunas ocasiones será necesario\cite{asscreed}.
 
+\begin{minted}{glsl}
+#version 330 core
+uniform sampler2D depthTexture;
+
+in vec2 TexCoords;
+uniform mat4 VP;
+uniform mat4 PrevVP;
+
+out vec4 velocity;
+
+void main() {
+    float zOverW = texture2D(depthTexture, TexCoords).r
+                   * 2.0f - 1.0f;
+
+    vec4 H = vec4(TexCoords.x * 2.0f - 1.0f,
+                  (1.0f - TexCoords.y) * 2.0f - 1.0f,
+                  zOverW, 1.0f);
+
+    vec4 D = H * inverse(VP);
+
+    // Original position
+    vec4 worldPos = D / D.w;
+
+    // Prev. position
+    vec4 currentPos = H;
+    vec4 previousPos = worldPos * PrevVP;
+    previousPos /= previousPos.w;
+
+
+    velocity = vec4((currentPos.xy - previousPos.xy) / 2.0f,
+                    0.0f, 1.0f);
+}
+\end{minted}
+
 \section{Combinación de texturas}
 
-Una vez se han calculado los motion vectors la combinación de texturas del history buffer y el frame actual es sencilla.
+Una vez se han calculado los motion vectors la combinación de texturas del history buffer y el frame actual es sencilla. Bastará con combinar ambas texturas pixel a pixel en el lugar correspondiente, usando interpolación lineal. Un valor de 5\% es lo que se usa en algunos videojuegos\cite{uncharted4} comerciales.
 
-IMAGEN
+Si se usa blurring es recomendable usar un factor de interpolación lineal dinámico, dependiendo del contraste local del pixel con los pixels que lo rodean.
+
+\begin{minted}{glsl}
+#version 330 core
+out vec4 FragColor;
+
+in vec2 TexCoords;
+
+uniform sampler2D currentTexture;
+uniform sampler2D historyAATexture;
+uniform sampler2D motionTexture;
+
+void main() {
+    vec2 historyVel = texture(motionTexture, TexCoords).xy;
+
+    vec2 uvLast = TexCoords + historyVel;
+    FragColor = mix(texture(currentTexture, TexCoords),
+                    texture(historyAATexture, uvLast),
+                    0.3f);
+}
+\end{minted}
 
 \section{Neighborhood Clamping}
 
 Los motion vectors a veces no son suficientemente precisos como para poder usarlos por si solos. Si un objeto ocluye a otro durante un cambio de frame el pixel resultante tendrá un color incorrecto, ya que se combinaran texturas de dos objetos diferentes. Esto puede resultar en un efecto llamado ghosting (figura \ref{ghosting}).
 
-Para solucionar esto se puede usar neighborhood clamping. Cada pixel se compara con el valor de los pixels adyacentes. Si el cambio de color es brusco y supera el umbral configurado se descarta la información del history buffer para ese pixel y se queda sin anti-aliasing hasta el siguiente frame.
+Para solucionar esto se puede usar neighborhood clamping. Cada pixel se compara con el valor de los pixels adyacentes. Si el cambio de color es mayor o menor al de los pixels adyacentes en el history buffer se hace un clamp del valor del pixel resultante.
 
 Usando técnicas de blurring también puede aliviar el efecto del ghosting ya que suaviza transiciones de un frame al siguiente. De hecho si se hace per pixel o per object motion blur se pueden reutilizar los mismos motion vectors necesarios para el Temporal anti-aliasing. Aún así este efecto por si solo no suele ser suficiente.
+
+Para conseguir esto se puede modificar el shader que combina texturas para primero realizar el clamping.
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/ghosting.png}
@@ -557,35 +671,180 @@ Usando técnicas de blurring también puede aliviar el efecto del ghosting ya qu
     \label{ghosting}
 \end{figure}
 
+\begin{minted}{glsl}
+#version 330 core
+out vec4 FragColor;
+
+in vec2 TexCoords;
+
+uniform sampler2D currentTexture;
+uniform sampler2D historyAATexture;
+uniform sampler2D motionTexture;
+
+
+#define KERNEL_SIZE 9
+const float step_w = 1.0 / 1920;
+const float step_h = 1.0 / 1080;
+const vec2 offset[KERNEL_SIZE] = vec2[KERNEL_SIZE](
+    vec2(-step_w, -step_h), vec2(0.0, -step_h), vec2(step_w, -step_h),
+    vec2(-step_w, 0.0), vec2(0.0, 0.0), vec2(step_w, 0.0),
+    vec2(-step_w, step_h), vec2(0.0, step_h), vec2(step_w, step_h)
+);
+
+void main() {
+    vec2 historyVel = texture(motionTexture, TexCoords).xy;
+    vec2 uvLast = TexCoords + historyVel;
+
+    vec4 maxVal = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    vec4 minVal = vec4(1.0f, 1.0f, 1.0f, 0.0f);
+
+    for (int i = 0; i < KERNEL_SIZE; ++i) {
+        vec4 tmp = texture2D(historyAATexture, uvLast.xy + offset[i]);
+        maxVal = max(tmp, maxVal);
+        minVal = min(tmp, minVal);
+    }
+
+    vec4 color = mix(texture(currentTexture, TexCoords),
+                     clamp(texture(historyAATexture, uvLast),minVal, maxVal),
+                     0.60f);
+
+    FragColor = color;
+}
+\end{minted}
+
 \section{Sharpening kernel}
 
 Debido a la naturaleza del temporal anti-aliasing la imagen final puede resultar demasiado suave. Los bordes quizás resulten algo difusos. Este efecto puede no ser del agrado del usuario. Una posible solución es usar un kernel de sharpening que resalta los bordes de la geometría.
 
+\[
+    \begin{bmatrix}
+        0 & -1 & 0 \\
+        -1 & 5 & -1 \\
+        0 & -1 & 0
+    \end{bmatrix}
+\]
+
+\begin{minted}{glsl}
+#version 330 core
+out vec4 FragColor;
+in vec2 TexCoords;
+uniform sampler2D finalTexture;
+
+#define KERNEL_SIZE 9
+const float kernel[KERNEL_SIZE] = float[KERNEL_SIZE](
+    0.0, -1.0 , 0.0 ,
+    -1.0 , 5.0 , -1.0 ,
+    0.0 , -1.0 , 0.0
+);
+const float step_w = 1.0 / 1920;
+const float step_h = 1.0 / 1080;
+const vec2 offset[KERNEL_SIZE] = vec2[KERNEL_SIZE](
+    vec2(-step_w, -step_h), vec2(0.0, -step_h), vec2(step_w, -step_h),
+    vec2(-step_w, 0.0), vec2(0.0, 0.0), vec2(step_w, 0.0),
+    vec2(-step_w, step_h), vec2(0.0, step_h), vec2(step_w, step_h)
+);
+
+void main(void)
+{
+    int i = 0;
+    vec4 sum = vec4(0.0);
+
+    vec4 tmp = texture2D(finalTexture, TexCoords.xy + offset[0]);
+    sum += tmp * kernel[0];
+    tmp = texture2D(finalTexture, TexCoords.st + offset[1]);
+    sum += tmp * kernel[1];
+    tmp = texture2D(finalTexture, TexCoords.st + offset[2]);
+    sum += tmp * kernel[2];
+    tmp = texture2D(finalTexture, TexCoords.st + offset[3]);
+    sum += tmp * kernel[3];
+    tmp = texture2D(finalTexture, TexCoords.st + offset[4]);
+    sum += tmp * kernel[4];
+    tmp = texture2D(finalTexture, TexCoords.st + offset[5]);
+    sum += tmp * kernel[5];
+    tmp = texture2D(finalTexture, TexCoords.st + offset[6]);
+    sum += tmp * kernel[6];
+    tmp = texture2D(finalTexture, TexCoords.st + offset[7]);
+    sum += tmp * kernel[7];
+    tmp = texture2D(finalTexture, TexCoords.st + offset[8]);
+    sum += tmp * kernel[8];
+
+    sum = clamp(sum, 0.0, 1.0);
+
+    FragColor = sum;
+}
+\end{minted}
+
 \chapter{Resultados}
 
-A continuación se encuentran algunos resultados.
+A continuación se encuentran algunos resultados de la implementación del anti-aliasing temporal.
+
+La figura~\ref{aaoff} contiene la imagen que creaba el motor sin modificaciones. Se puede ver una cantidad considerable de aliasing en el borde del cubo, al estar ligeramente inclinado. Activando el anti-aliasing temporal, como en las figuras~\ref{taa8} y~\ref{taa16}, se aprecia una mejora notable en la calidad de los bordes. Activando más samples la calidad aumenta.
+
+El anti-aliasing temporal también mejora el aliasing en reflejos. Comparando las figura~\ref{shadowtaaOFF} con la figura~\ref{shadowtaaON} se puede apreciar un borde más suave, también en el interior de la geometría. Esto no es posible solucionarlo con un multisampling anti-aliasing tradicional.
+
+Por último, en la figura~\ref{sharpOnsmall} se puede ver el efecto visual producido por el filtro de sharpening. Comparado con la figura~\ref{sharpOFFsmall} las bordes resaltan mucho más, y eliminan la suavidad de los bordes. Comparado con la imagen original (figura~\ref{sharpTAAOFFsmall}) puede resultar excesivo. Afortunadamente el filtro es opcional y el usuario final tiene la opción de activarlo o no, dependiendo de su preferencia.
 
 \begin{figure}[!htbp]
-    \includegraphics[width=\linewidth]{figures/taaoff.png}
-    \caption{Anti-aliasing off}
+    \includegraphics[width=.8\linewidth]{figures/taaoff.png}
+    \caption{Anti-aliasing desactivado}
     \label{aaoff}
 \end{figure}
 
 \begin{figure}[!htbp]
-    \includegraphics[width=\linewidth]{figures/taa8.png}
+    \includegraphics[width=.8\linewidth]{figures/taa8.png}
     \caption{Temporal anti-aliasing con 8 samples}
     \label{taa8}
 \end{figure}
 
 \begin{figure}[!htbp]
-    \includegraphics[width=\linewidth]{figures/taa16.png}
+    \includegraphics[width=.8\linewidth]{figures/taa16.png}
     \caption{Temporal anti-aliasing con 16 samples}
     \label{taa16}
 \end{figure}
 
+\begin{figure}[!htbp]
+    \includegraphics[width=.8\linewidth]{figures/shadowtaaOFF.png}
+    \caption{Reflejos especulares con anti-aliasing apagado}
+    \label{shadowtaaOFF}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \includegraphics[width=.8\linewidth]{figures/shadowtaaON.png}
+    \caption{Reflejos especulares con temporal anti-aliasing}
+    \label{shadowtaaON}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \includegraphics[width=.8\linewidth]{figures/sharpOFFsmall.png}
+    \caption{Filtro de sharpening desactivado}
+    \label{sharpOFFsmall}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \includegraphics[width=.8\linewidth]{figures/sharpONsmall.png}
+    \caption{Filtro de sharpening activado}
+    \label{sharpOnsmall}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \includegraphics[width=.8\linewidth]{figures/sharpTAAOFFsmall.png}
+    \caption{Temporal anti-aliasing desactivado}
+    \label{sharpTAAOFFsmall}
+\end{figure}
+
 \chapter{Conclusión}
 
-Está técnica desarrollada se puede usar para otros efectos, como motion blur o \GLS{SSAO}\@.
+Para lograr unos resultados excelentes con respecto a la calidad de imagen es indispensable implementar un sistema de anti-aliasing robusto, capaz de solucionar los varios aspectos del aliasing. El approach que ha habido durante los últimos años refleja esta realidad fielmente. De pasar a usar multisampling y acelerarlo por hardware, a usar sistemas de post-procesado implementados completamente en software, pasando por métodos híbridos, hasta culminar en el anti-aliasing temporal.
+
+El anti-aliasing temporal soluciona una gran parte de problemas del aliasing, como en bordes de geometría, en texturas, en reflejos especulares y además se puede reutilizar parte del pipeline (los motion vectors) para la implementación de un motion blur que solventa el aliasing de movimiento. Ademas de reaprovechar el pipeline para solventar el motion aliasing se puede usar para otros efectos visuales como el \GLS{SSAO}, que aportan todavía más realismo a las escenas. Su compatibilidad y rendimiento, al igual que los sistemas de post-procesado, hacen que sea un candidato perfecto para sistemas que se ejecutan en tiempo real, como los videojuegos.
+
+Sin embargo, su implementación no es nada trivial. Si bien es cierto que su implementación para una imagen estática no requiere demasiada precisión, para escenas dinámicas, con reflejos y transparencias requieren que la implementación sea extremadamente precisa. Si no es así, aparecerán defectos visuales mucho peores que el aliasing, como por ejemplo el ghosting o un resultado excesivamente suave. Además no llegará a ser una solución drop-in, como pueden ser el FXAA o el SMAA, por ejemplo. Esos algoritmos, puramente de post-procesado, los puede llegar a inyectar el usuario, aunque el desarrollador no los haya incluido en su software. En cambio, el temporal anti-aliasing requiere información y modificaciones que están muy ligadas al motor gráfico usado.
+
+Con la popularización del hardware especifico para tareas de aprendizaje automático, tanto en tarjetas gráficas como en dispositivos móviles, el siguiente paso en el campo del anti-aliasing puede llegar a ser un algoritmo de este tipo. Estos algoritmos aplicados al software en tiempo real todavía están en su infancia, pero en otros entornos se usan con muy buenos resultados.
+
+En definitiva, el anti-aliasing temporal saca todo el potencial que ofrecen los motores gráficos y se convertirá en el sistema usado por defecto, reemplazando técnicas como el multisampling.
+
+A un nivel más personal, este proyecto ha satisfecho una inquietud mía de sobre el funcionamiento de estas técnicas que tengo desde hace años. En un futuro se pretende extender el sistema para incluir mejoras como soporte para escenas dinámicas, transparencias, reflejos, motion blur, \Gls{SSAO}, etc.
 
 % Bibliography:
 \nocite{*}
