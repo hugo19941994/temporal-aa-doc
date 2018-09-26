@@ -77,19 +77,6 @@
 \end{frame}
 
 \begin{frame}[fragile]{En textura}
-    \begin{figure}[!htbp]
-        \centering
-        \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{figures/ss1on.png}
-        \end{subfigure}
-        \centering
-        \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{figures/ss1off.png}
-        \end{subfigure}
-    \end{figure}
-\end{frame}
-
-\begin{frame}[fragile]{En textura}
     \centering
     \begin{figure}[!htbp]
         \centering
@@ -116,24 +103,6 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}[fragile]{Blur}
-    \begin{figure}
-        \includegraphics[width=\linewidth]{./figures/shutter.jpg}
-    \end{figure}
-\end{frame}
-
-\begin{frame}[fragile]{Blur}
-    \begin{figure}
-        \includegraphics[width=\linewidth]{./figures/doomblur1.png}
-    \end{figure}
-\end{frame}
-
-\begin{frame}[fragile]{Blur}
-    \begin{figure}
-        \includegraphics[width=\linewidth]{./figures/doomblur2.png}
-    \end{figure}
-\end{frame}
-
 \section{Anti-aliasing tradicional}
 
 \begin{frame}[fragile]{Filtros}
@@ -157,51 +126,19 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}[fragile]{Supersampling}
-    \begin{figure}
-        \includegraphics[width=.5\linewidth]{./figures/quincunx.png}
-    \end{figure}
-\end{frame}
-
 \begin{frame}[fragile]{Multisampling}
+    No funciona con deferred shading
+
     \begin{figure}
         \includegraphics[width=\linewidth]{./figures/msaasample.png}
     \end{figure}
 \end{frame}
 
-\begin{frame}[fragile]{Multisampling}
-    \begin{figure}[!htbp]
-        \centering
-        \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{figures/msaaoff.png}
-        \end{subfigure}
-        \centering
-        \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\textwidth]{figures/msaa.png}
-        \end{subfigure}
-    \end{figure}
-\end{frame}
+\begin{frame}[fragile]{Post Processing AA}
+    FXAA, MLAA, SMAA
 
-\begin{frame}[fragile]{MIP Maps}
-    \begin{figure}
-        \includegraphics[width=\linewidth]{./figures/mipmaps.png}
-    \end{figure}
-\end{frame}
+    Inyección
 
-
-\begin{frame}[fragile]{FXAA}
-    \begin{figure}
-        \includegraphics[width=\linewidth]{./figures/fxaacomparison.png}
-    \end{figure}
-\end{frame}
-
-\begin{frame}[fragile]{MLAA}
-    \begin{figure}
-        \includegraphics[width=\linewidth]{./figures/mlaares.png}
-    \end{figure}
-\end{frame}
-
-\begin{frame}[fragile]{SMAA}
     \begin{figure}[!htbp]
         \centering
         \begin{subfigure}[b]{0.45\textwidth}
@@ -267,12 +204,6 @@
     \]
 \end{frame}
 
-\begin{frame}[fragile]{Problemas}
-    \begin{figure}
-        \includegraphics[width=.8\linewidth]{./figures/ghosting.png}
-    \end{figure}
-\end{frame}
-
 \section{Resultados}
 
 \begin{frame}[fragile]{Bordes geometría}
@@ -310,6 +241,13 @@
 
 \section{Conclusiones y mejoras futuras}
 
+\begin{frame}[fragile]{Conclusión}
+    Rendimiento, calidad
+    \begin{figure}
+        \includegraphics[width=.8\linewidth]{./figures/ghosting.png}
+    \end{figure}
+\end{frame}
+
 \begin{frame}[fragile]{Mejoras}
     \begin{itemize}
         \item Blurring
@@ -318,6 +256,13 @@
         \item Reflejos
     \end{itemize}
 \end{frame}
+
+\begin{frame}[fragile]{Blur}
+    \begin{figure}
+        \includegraphics[width=\linewidth]{./figures/doomblur1.png}
+    \end{figure}
+\end{frame}
+
 
 \begin{frame}[fragile]{Mejoras}
     \begin{figure}
