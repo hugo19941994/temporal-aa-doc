@@ -2,11 +2,13 @@ os: osx
 osx_image: xcode10
 before_install:
   - brew update
+  - brew install ghostscript
   - brew tap caskroom/fonts
   - brew cask install basictex font-fira-mono font-fira-sans
   - export PATH=$PATH:/Library/TeX/texbin/
   - sudo tlmgr update --self
-  - sudo tlmgr install glossaries glossaries-extra mfirstuc xfor datatool substr multirow cleveref svg ifplatform blkarray pgfgantt floatrow biblatex logreq xstring biblatex-ieee minted fvextra framed csquotes pgfplots xindy beamertheme-metropolis pgfopts biber latexmk chktex lacheck trimspaces
+    sudo tlmgr update --all
+  - sudo tlmgr install glossaries glossaries-extra mfirstuc xfor datatool substr multirow cleveref svg ifplatform blkarray pgfgantt floatrow biblatex logreq xstring biblatex-ieee minted fvextra framed csquotes pgfplots xindy beamertheme-metropolis pgfopts biber latexmk chktex lacheck trimspaces epstopdf
   - sudo pip2 install pygments
 script:
   - make all
