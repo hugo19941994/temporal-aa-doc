@@ -7,7 +7,6 @@ _minted-thesis
 *.aux
 *.toc
 *.ps
-*.eps
 *.blg
 *.bbl
 *.glg
