@@ -1,5 +1,7 @@
 # Temporal Antialiasing Project
 
+[![Build Status](https://travis-ci.com/hugo19941994/temporal-aa-doc.svg?branch=master)](https://travis-ci.com/hugo19941994/temporal-aa-doc)
+
 Master in Computer Graphics final project.
 
 To compile it, a modern LaTeX distribution needs to be installed, in addition to Python, pygments and make.
