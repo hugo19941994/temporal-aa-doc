@@ -166,8 +166,7 @@ Este proyecto se centra en aliasing dentro del campo de la computación gráfica
 
 \begin{figure}[!htbp]
     \includegraphics[width=.7\linewidth]{figures/skull.jpg}
-    \caption{Aliasing en una radiografía\cite{rayos}}
-    \label{skull}
+    \caption{Aliasing en una radiografía\cite{rayos}\label{skull}}
 \end{figure}
 
 Existen otros tipos de aliasing, como en el interior de texturas o al mover la camera rápidamente.
@@ -184,14 +183,12 @@ En pantallas de alta densidad (> 200 DPI\cite{googledpi}), como la de varios sma
 
 \begin{figure}[!htbp]
     \includegraphics[width=.7\linewidth]{figures/pointsampling.png}
-    \caption{Point Sampling\cite{Shreiner:2013:OPG:2544032}}
-    \label{pointsampling}
+    \caption{Point Sampling\cite{Shreiner:2013:OPG:2544032}\label{pointsampling}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/hitmanaliasing.png}
-    \caption{Aliasing en Hitman (2016)}
-    \label{hitmanaliasing}
+    \caption{Aliasing en Hitman (2016)\label{hitmanaliasing}}
 \end{figure}
 
 \subsection{Aliasing de texturas}
@@ -202,8 +199,7 @@ Este tipo de aliasing no está limitado al rendering de gráficos 3D en tiempo r
 
 \begin{figure}[!htbp]
     \includegraphics[width=.3\linewidth]{figures/moire.png}
-    \caption{Patrón de Moiré\cite{studysupersampling}}
-    \label{moire}
+    \caption{Patrón de Moiré\cite{studysupersampling}\label{moire}}
 \end{figure}
 
 La generación de MIP Maps puede solucionar este tipo de aliasing en ciertas condiciones. Los MIP Maps son versiones alternativas de las texturas usadas por un software gráfico. Estas versiones contienen texturas de menor resolución filtradas, lo que puede aliviar el aliasing y patrones de Moiré producidos por usar downsampling de texturas con una alta resolución con nearest neighbor, como se puede apreciar en la figura~\ref{mipmaps}.
@@ -212,8 +208,7 @@ Estas texturas se suelen usar para objetos que estén a alguna distancia determi
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/mipmaps.png}
-    \caption{Anti-aliasing con Mip Maps}
-    \label{mipmaps}
+    \caption{Anti-aliasing con Mip Maps\label{mipmaps}}
 \end{figure}
 
 \subsection{Specular Aliasing}
@@ -225,8 +220,7 @@ Por ejemplo, un espejo es completamente especular, ya que refleja toda la luz qu
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=.8\linewidth]{figures/iluminacion.png}
-    \caption{Componentes de iluminación en \Gls{opengl}\@. Ambiente (superior izquierda), difuso (superior derecha) y especular (inferior)\cite{Shreiner:2013:OPG:2544032}}
-    \label{gls}
+    \caption{Componentes de iluminación en \Gls{opengl}\@. Ambiente (superior izquierda), difuso (superior derecha) y especular (inferior)\cite{Shreiner:2013:OPG:2544032}\label{gls}}
 \end{figure}
 
 El cálculo de esos reflejos pueden contener aliasing, al igual que las texturas. En la figura~\ref{specular} se puede apreciar como los reflejos de un suelo metálico debido al mismo problema que en el aliasing dentro de texturas.
@@ -242,8 +236,7 @@ El cálculo de esos reflejos pueden contener aliasing, al igual que las texturas
         \includegraphics[width=\textwidth]{figures/specular-fixed.png}
         \caption{TSSAA}
     \end{subfigure}
-    \caption{Specular aliasing en Doom (2016)}
-    \label{specular}
+    \caption{Specular aliasing en Doom (2016)\label{specular}}
 \end{figure}
 
 \subsection{Motion Aliasing}
@@ -256,16 +249,14 @@ Estos efectos tienen como objetivo simular el efecto que tiene el tiempo de expo
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/shutter.jpg}
-    \caption{Comparación de tiempo de exposición (360º, 180º, 90º, 45º)\cite{shuttertips}}
-    \label{shutter}
+    \caption{Comparación de tiempo de exposición (360º, 180º, 90º, 45º)\cite{shuttertips}\label{shutter}}
 \end{figure}
 
 Una de las primeras técnicas era la de usar un buffer de acumulación. Consiste en escoger una ventana de $n$ frames anteriores al actual y combinarlo con una opacidad variable. Con cada frame esta ventana se actualiza. Esto intenta emular como funciona el tiempo de exposición de una cámara. Su principal ventaja es que funciona con objetos translucidos y partículas sin tener que hacer nada en especial, ya que afecta a toda la escena. Si el framerate es muy alto (alrededor de 120\GLS{FPS}) y fluido el resultado puede ser muy bueno, pero en software donde el rendimiento es menor (menos de 60\GLS{FPS}) la imagen se verá demasiado borrosa y el efecto no será el deseado. De hecho como se puede ver en la figura~\ref{gta3} puede llegar a ser más desagradable que el propio aliasing.
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/gta3.png}
-    \caption{Grand Theft Auto 3: Vice City en PS2}
-    \label{gta3}
+    \caption{Grand Theft Auto 3: Vice City en PS2\label{gta3}}
 \end{figure}
 
 Con la llegada de los shaders se empezó a usar per pixel motion blur. Esta técnica consiste en guardar un buffer de velocidad y un history buffer donde se almacena el frame anterior y combinar texturas. Esto permite más flexibilidad que la técnica del accumulation buffer, ya que dependeiendo del valor del velocity buffer se puede aplicar un efecto mayor o menor de blurring. Normalmente, cuanto más se ha movido un pixel de sitio, mayor será el efecto de blurring. Esto se ejecuta como un efecto de post procesado, es muy rápido y los resultados pueden ser muy convincentes incluso con framerates bajos. Una de las desventajas es que es complicado calcular el blurring en escenas con transparencias o en partículas.
@@ -283,20 +274,17 @@ Como se puede ver en la figura~\ref{crysisblur}, estos tipo de blurring puede cr
     \begin{subfigure}[b]{0.8\textwidth}
         \includegraphics[width=\textwidth]{figures/doomblur2.png}
     \end{subfigure}
-    \caption{Per object motion blur en Doom (2016)}
-    \label{doomblur}
+    \caption{Per object motion blur en Doom (2016)\label{doomblur}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/crysisblur.png}
-    \caption{Siluetas sobre objetos con blur en Crysis (2007)\cite{crysis}}
-    \label{crysisblur}
+    \caption{Siluetas sobre objetos con blur en Crysis (2007)\cite{crysis}\label{crysisblur}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/blurringquality.png}
-    \caption{Diferentes niveles de calidad de motion blur en Crysis (2007)\cite{crysis}}
-    \label{blurringquality}
+    \caption{Diferentes niveles de calidad de motion blur en Crysis (2007)\cite{crysis}\label{blurringquality}}
 \end{figure}
 
 
@@ -304,8 +292,7 @@ Como se puede ver en la figura~\ref{crysisblur}, estos tipo de blurring puede cr
 
 El anti-aliasing es el conjunto de técnicas cuyo objetivo es el de disimular o eliminar las imperfecciones vistas anteriormente.
 
-\subsection{Filtrado}
-\label{filtros}
+\subsection{Filtrado}\label{filtros}
 
 En gráficos raster (bidimensionales) el anti-aliasing se realiza mediante filtros. Para entender el filtrado en imágenes es necesario pensar en pixels no como pequeños cuadrados en una pantalla, si no en muestras de una función (normalmente 3 muestras, una por cada canal RGB)\cite{Smith95apixel}. Los filtros (o kernels) transforman las funciones para intentar suavizar los cambios bruscos de color.
 
@@ -315,8 +302,7 @@ En la figura~\ref{gls} se muestra una comparación de las diferentes formas en l
 
 \begin{figure}[!htbp]
     \includegraphics[width=\linewidth]{figures/Lw6ei.png}
-    \caption{Comparación de interpolación usando diferentes filtros\cite{gis}}
-    \label{gls}
+    \caption{Comparación de interpolación usando diferentes filtros\cite{gis}\label{gls}}
 \end{figure}
 
 \begin{figure}[!htbp]
@@ -332,7 +318,7 @@ Estas técnicas consumen más ancho de banda y memoria, ya que los buffers tiene
 
 La calidad del supersampling viene dado por la cantidad de samples por pixel y la técnica para saber que pixels usar en la imagen con mayor resolución para cada pixel de la pantalla.
 
-En comparación a otras técnicas de anti-aliasing esta corrige aliasing de texturas (ver figuras \ref{ss1} y \ref{ss2}) y especular (ver figura \ref{specular}), además de aliasing de geometría. Esto se debe a que los subsamples los coge de en toda la escena.
+En comparación a otras técnicas de anti-aliasing esta corrige aliasing de texturas (ver figuras~\ref{ss1} y~\ref{ss2}) y especular (ver figura~\ref{specular}), además de aliasing de geometría. Esto se debe a que los subsamples los coge de en toda la escena.
 
 \begin{figure}[!htbp]
     \centering
@@ -345,8 +331,7 @@ En comparación a otras técnicas de anti-aliasing esta corrige aliasing de text
         \includegraphics[width=\textwidth]{figures/ss1on.png}
         \caption{SSAA 4x}
     \end{subfigure}
-    \caption{Resultados de SSAA en Borderlands 2}
-    \label{ss1}
+    \caption{Resultados de SSAA en Borderlands 2\label{ss1}}
 \end{figure}
 
 \begin{figure}[!htbp]
@@ -359,8 +344,7 @@ En comparación a otras técnicas de anti-aliasing esta corrige aliasing de text
         \includegraphics[width=\textwidth]{figures/ss2on.png}
         \caption{SSAA 4x}
     \end{subfigure}
-    \caption{Resultados de SSAA en Borderlands 2}
-    \label{ss2}
+    \caption{Resultados de SSAA en Borderlands 2\label{ss2}}
 \end{figure}
 
 \subsubsection{Ordered Grid Supersampling}
@@ -373,8 +357,7 @@ Desde 2014 Nvidia ha publicado una técnica llamada Dynamic Super Resolution\cit
 
 \begin{figure}[!htbp]
     \includegraphics[width=\linewidth]{figures/ogss.png}
-    \caption{Ordered Grid Super-Sampling\cite{Beets2000SupersamplingAA}}
-    \label{ogss}
+    \caption{Ordered Grid Super-Sampling\cite{Beets2000SupersamplingAA}\label{ogss}}
 \end{figure}
 
 \subsubsection{Rotated Grid Supersampling}
@@ -383,8 +366,7 @@ En el caso del RGSS se cambia el lugar de los subsamples para minimizar la canti
 
 \begin{figure}[!htbp]
     \includegraphics[width=\linewidth]{figures/rgss.png}
-    \caption{Rotated Grid Super-Sampling\cite{Beets2000SupersamplingAA}}
-    \label{rgss}
+    \caption{Rotated Grid Super-Sampling\cite{Beets2000SupersamplingAA}\label{rgss}}
 \end{figure}
 
 \subsubsection{Quincunx Supersampling}
@@ -395,8 +377,7 @@ Aunque este patrón se pueda usar para supersampling Nvidia lo implementó en ha
 
 \begin{figure}[!htbp]
     \includegraphics[width=.5\linewidth]{figures/quincunx.png}
-    \caption{Quincunx Pattern\cite{hraa}}
-    \label{fig:quincunx}
+    \caption{Quincunx Pattern\cite{hraa}\label{fig:quincunx}}
 \end{figure}
 
 \subsection{Multisampling}
@@ -405,12 +386,11 @@ El multisampling es una optimización del supersampling. Se siguen usando subpix
 
 En el centro de un polígono todos los subpixels van a estar contenidos dentro, pero el color solo se calcula una vez (por ejemplo en el centro del pixel), por lo que se usará el 100\% del color, pero puede contener aliasing. En cambio, en los bordes, algún subpixel estará fuera de la geometría, por lo que se usará un porcentaje del color calculado, suavizando el borde.
 
-Otra de las desventajas del multisampling anti-aliasing es que, tradicionalmente, no se puede usar en motores con deferred shading. Debido a que el calculo del color final de cada pixel se realiza en un pixel shader posterior al cálculo del g-buffer (figura \ref{gbuffer}), al hacer el resolve del mutisampling no está lista toda la información necesaria. Desde \Gls{opengl} 3.2 y Direct3D 10.1 esto ha cambiado gracias al explicit multisampling\cite{textureMultisample}. La creación del g-buffer ahora se puede realizar usando texturas multisampled y al calcular la luz se puede acceder a los subsamples mediante la función texelfetch. Si se realiza de esta forma hay que sacrificar la creación automática de mipmaps y filtrado de texturas, aunque siempre se pueden implementar manualmente en shaders. Aún así muchos desarrolladores han optado por usar post-processing anti-aliasing al usar deferred shading.
+Otra de las desventajas del multisampling anti-aliasing es que, tradicionalmente, no se puede usar en motores con deferred shading. Debido a que el calculo del color final de cada pixel se realiza en un pixel shader posterior al cálculo del g-buffer (figura~\ref{gbuffer}), al hacer el resolve del mutisampling no está lista toda la información necesaria. Desde \Gls{opengl} 3.2 y Direct3D 10.1 esto ha cambiado gracias al explicit multisampling\cite{textureMultisample}. La creación del g-buffer ahora se puede realizar usando texturas multisampled y al calcular la luz se puede acceder a los subsamples mediante la función texelfetch. Si se realiza de esta forma hay que sacrificar la creación automática de mipmaps y filtrado de texturas, aunque siempre se pueden implementar manualmente en shaders. Aún así muchos desarrolladores han optado por usar post-processing anti-aliasing al usar deferred shading.
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/msaasample.png}
-    \caption{Multisampling}
-    \label{msaasample}
+    \caption{Multisampling\label{msaasample}}
 \end{figure}
 
 \begin{figure}[!htbp]
@@ -424,14 +404,12 @@ Otra de las desventajas del multisampling anti-aliasing es que, tradicionalmente
         \includegraphics[width=\textwidth]{figures/msaa.png}
         \caption{MSAA 4x}
     \end{subfigure}
-    \caption{Resultados del MSAA}
-    \label{msaares}
+    \caption{Resultados del MSAA\label{msaares}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=\linewidth]{figures/gbuffer.png}
-    \caption{Generación de G-Buffer en Metal Gear Solid V\@: The Phantom Pain\cite{analysismgsv}}
-    \label{gbuffer}
+    \caption{Generación de G-Buffer en Metal Gear Solid V\@: The Phantom Pain\cite{analysismgsv}\label{gbuffer}}
 \end{figure}
 
 \subsection{Post Processing Anti-aliasing}
@@ -442,18 +420,16 @@ Este tipo de anti-aliasing ha ganado popularidad durante los últimos años, deb
 
 El FXAA\cite{FXAA} es un sistema de anti-aliasing de post procesado desarrollado por NVIDIA\@. Se implementa como un único pixel shader y tiene diferentes niveles de calidad. El impacto en su rendimiento es muy bajo en comparación a métodos con resultados similares (inferior a 1ms).
 
-Recibe la imagen final en formato RGB y la transforma en valores de luminancia por pixel. Usando el contraste entre pixels adyacentes detecta los bordes (figura \ref{fxaaedge}). Cada borde es clasificado como horizontal o vertical. Dependiendo de los valores de luminancia y orientación de cada borde se aplica un pequeño offset para cada pixel y se hace un resampling para calcular un nuevo color que reduzca el aliasing\cite{FXAA}\cite{fxaa2}.
+Recibe la imagen final en formato RGB y la transforma en valores de luminancia por pixel. Usando el contraste entre pixels adyacentes detecta los bordes (figura~\ref{fxaaedge}). Cada borde es clasificado como horizontal o vertical. Dependiendo de los valores de luminancia y orientación de cada borde se aplica un pequeño offset para cada pixel y se hace un resampling para calcular un nuevo color que reduzca el aliasing\cite{FXAA}\cite{fxaa2}.
 
 \begin{figure}[!htbp]
     \includegraphics[width=\linewidth]{figures/fxaaedge.png}
-    \caption{Detección de bordes usando valores de luminancia\cite{fxaa2}}
-    \label{fxaaedge}
+    \caption{Detección de bordes usando valores de luminancia\cite{fxaa2}\label{fxaaedge}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/fxaacomparison.png}
-    \caption{Escena con AA off, MSAA 4x y FXAA }
-    \label{fxaacomparison}
+    \caption{Escena con AA off, MSAA 4x y FXAA\label{fxaacomparison}}
 \end{figure}
 
 \subsubsection{Morphological Anti-aliasing}
@@ -462,14 +438,12 @@ El MLAA\cite{Reshetov:2009:MA:1572769.1572787} se basa en buscar los bordes disc
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/mlaacomparison.png}
-    \caption{MLAA en blanco y negro}
-    \label{mlaacomparison}
+    \caption{MLAA en blanco y negro\label{mlaacomparison}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=\linewidth]{figures/mlaares.png}
-    \caption{MLAA con color}
-    \label{mlaacomparison}
+    \caption{MLAA con color\label{mlaacomparison}}
 \end{figure}
 
 \subsubsection{Enhanced Subpixel Morphological Anti-aliasing}
@@ -484,7 +458,7 @@ Las variaciones con respecto a MLAA son:
     \item Puede funcionar con más de un sample por pixel, junto a un supersampling tradicional
 \end{itemize}
 
-En la figura \ref{halo1} se puede ver la calidad del resultado final. Como con el resto de técnicas de anti-aliasing de post-procesado, aunque la aplicación no tenga soporte nativo para SMAA (como es el caso de Halo 1) se puede inyectar mediante software, gracias a que se ejecuta como una pasada final a la imagen.
+En la figura~\ref{halo1} se puede ver la calidad del resultado final. Como con el resto de técnicas de anti-aliasing de post-procesado, aunque la aplicación no tenga soporte nativo para SMAA (como es el caso de Halo 1) se puede inyectar mediante software, gracias a que se ejecuta como una pasada final a la imagen.
 
 \begin{figure}[!htbp]
     \centering
@@ -497,8 +471,7 @@ En la figura \ref{halo1} se puede ver la calidad del resultado final. Como con e
         \includegraphics[width=\textwidth]{figures/smaaON.png}
         \caption{SMAA}
     \end{subfigure}
-    \caption{Comparación de antialiasing en Halo 1 (2001)}
-    \label{halo1}
+    \caption{Comparación de antialiasing en Halo 1 (2001)\label{halo1}}
 \end{figure}
 
 \subsection{Temporal Anti-aliasing}
@@ -509,20 +482,18 @@ Su implementación y resultados se explican en más detalles en los siguientes c
 
 \subsection{Machine Learning Anti-aliasing}
 
-Están empezando a aparecer técnicas que usan algoritmos de machine learning (como redes neuronales profundas) para generar una imagen con mayor calidad a la original. Este tipo de problemas son ideales para algoritmos de machine learning, ya que es fácil conseguir datos con los que entrenar las redes y no existe ninguna solución algorítmica ideal que se pueda usar en tiempo real\cite{Huang-CVPR-2015}\cite{5459271} (ver figura \ref{superres}).
+Están empezando a aparecer técnicas que usan algoritmos de machine learning (como redes neuronales profundas) para generar una imagen con mayor calidad a la original. Este tipo de problemas son ideales para algoritmos de machine learning, ya que es fácil conseguir datos con los que entrenar las redes y no existe ninguna solución algorítmica ideal que se pueda usar en tiempo real\cite{Huang-CVPR-2015}\cite{5459271} (ver figura~\ref{superres}).
 
 Nvidia, desde la arquitectura Turing, ha comenzado a explotar estas técnicas para mejorar la calidad del anti-aliasing\cite{turingwhitepaper}. Esta arquitectura cuenta con hardware especifico que acelera tareas de deep learning. Nvidia entrenará redes neuronales para cada software en cuestión con imágenes reales usando supersampling x64. La red ajustará sus valores en cada iteración del entrenamiento hasta llegar a un nivel satisfactorio de calidad. Estas redes entrenadas se distribuirán a los usuarios de tarjetas Turing.
 
 \begin{figure}[!htbp]
     \includegraphics[width=\linewidth]{figures/superres.png}
-    \caption{Super Res\cite{turingwhitepaper}}
-    \label{superres}
+    \caption{Super Res\cite{turingwhitepaper}\label{superres}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=\linewidth]{figures/dlss.png}
-    \caption{DLSS\cite{turingwhitepaper}}
-    \label{fig:dlss}
+    \caption{DLSS\cite{turingwhitepaper}\label{fig:dlss}}
 \end{figure}
 
 \chapter{Desarrollo}
@@ -558,8 +529,7 @@ En este punto si viésemos la imagen seguiríamos notando el aliasing y la image
 
 \begin{figure}[!htbp]
     \includegraphics[width=\linewidth]{figures/halton.png}
-    \caption{Jitter con secuencia Halton}
-    \label{halton}
+    \caption{Jitter con secuencia Halton\label{halton}}
 \end{figure}
 
 \begin{minted}{cpp}
@@ -581,12 +551,11 @@ float Halton(int Index, int Base) {
 
 El segundo paso para la implementación del temporal anti-aliasing consiste en la creación de un velocity buffer. Este buffer contendrá una textura fp16 con dos canales de color (rojo y verde) donde cada pixel representa un vector.
 
-Ese vector representa cuanto se ha movido un pixel del frame actual ($n$) al anterior ($n_{-1}$). Cada pixel viene definido por sus posiciones en $x$ e $y$. Para calcular el velocity buffer se usa su posición actual $C = x_{n}y_{n}$ y su posición previa $P = x_{n_{-1}}y_{n_{-1}}$. En el velocity buffer se almacena $\vec{CP}$, como se ilustra en la figura \ref{vec}.
+Ese vector representa cuanto se ha movido un pixel del frame actual ($n$) al anterior ($n_{-1}$). Cada pixel viene definido por sus posiciones en $x$ e $y$. Para calcular el velocity buffer se usa su posición actual $C = x_{n}y_{n}$ y su posición previa $P = x_{n_{-1}}y_{n_{-1}}$. En el velocity buffer se almacena $\vec{CP}$, como se ilustra en la figura~\ref{vec}.
 
 \begin{figure}[!htbp]
     \includegraphics[width=.5\linewidth]{figures/vec.png}
-    \caption{$\vec{CP}$\cite{filmicsmaa}}
-    \label{vec}
+    \caption{$\vec{CP}$\cite{filmicsmaa}\label{vec}}
 \end{figure}
 
 Para la creación del velocity buffer en una escena dinámica es imprescindible saber no solo el movimiento de cámara del frame anterior, si no como se han movido los objetos. Esto se complica si hay objetos translucidos como ventanas, o que reflejan luz como los espejos\cite{uncharted4}.
@@ -657,7 +626,7 @@ void main() {
 
 \section{Neighborhood Clamping}
 
-Los motion vectors a veces no son suficientemente precisos como para poder usarlos por si solos. Si un objeto ocluye a otro durante un cambio de frame el pixel resultante tendrá un color incorrecto, ya que se combinaran texturas de dos objetos diferentes. Esto puede resultar en un efecto llamado ghosting (figura \ref{ghosting}).
+Los motion vectors a veces no son suficientemente precisos como para poder usarlos por si solos. Si un objeto ocluye a otro durante un cambio de frame el pixel resultante tendrá un color incorrecto, ya que se combinaran texturas de dos objetos diferentes. Esto puede resultar en un efecto llamado ghosting (figura~\ref{ghosting}).
 
 Para solucionar esto se puede usar neighborhood clamping. Cada pixel se compara con el valor de los pixels adyacentes. Si el cambio de color es mayor o menor al de los pixels adyacentes en el history buffer se hace un clamp del valor del pixel resultante.
 
@@ -667,8 +636,7 @@ Para conseguir esto se puede modificar el shader que combina texturas para prime
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/ghosting.png}
-    \caption{Ghosting\cite{unrealtaa}}
-    \label{ghosting}
+    \caption{Ghosting\cite{unrealtaa}\label{ghosting}}
 \end{figure}
 
 \begin{minted}{glsl}
@@ -786,50 +754,42 @@ Por último, en la figura~\ref{sharpOnsmall} se puede ver el efecto visual produ
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/taaoff.png}
-    \caption{Anti-aliasing desactivado}
-    \label{aaoff}
+    \caption{Anti-aliasing desactivado\label{aaoff}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/taa8.png}
-    \caption{Temporal anti-aliasing con 8 samples}
-    \label{taa8}
+    \caption{Temporal anti-aliasing con 8 samples\label{taa8}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/taa16.png}
-    \caption{Temporal anti-aliasing con 16 samples}
-    \label{taa16}
+    \caption{Temporal anti-aliasing con 16 samples\label{taa16}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/shadowtaaOFF.png}
-    \caption{Reflejos especulares con anti-aliasing apagado}
-    \label{shadowtaaOFF}
+    \caption{Reflejos especulares con anti-aliasing apagado\label{shadowtaaOFF}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/shadowtaaON.png}
-    \caption{Reflejos especulares con temporal anti-aliasing}
-    \label{shadowtaaON}
+    \caption{Reflejos especulares con temporal anti-aliasing\label{shadowtaaON}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/sharpOFFsmall.png}
-    \caption{Filtro de sharpening desactivado}
-    \label{sharpOFFsmall}
+    \caption{Filtro de sharpening desactivado\label{sharpOFFsmall}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/sharpONsmall.png}
-    \caption{Filtro de sharpening activado}
-    \label{sharpOnsmall}
+    \caption{Filtro de sharpening activado\label{sharpOnsmall}}
 \end{figure}
 
 \begin{figure}[!htbp]
     \includegraphics[width=.8\linewidth]{figures/sharpTAAOFFsmall.png}
-    \caption{Temporal anti-aliasing desactivado}
-    \label{sharpTAAOFFsmall}
+    \caption{Temporal anti-aliasing desactivado\label{sharpTAAOFFsmall}}
 \end{figure}
 
 \chapter{Conclusión}
